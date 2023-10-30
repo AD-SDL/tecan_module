@@ -14,7 +14,7 @@ global state, module_resources
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global state, module_resources
+    global tecan, state, module_resources
     """Initial run function for the Tecan app, initializes the state
         Parameters
         ----------
@@ -72,7 +72,11 @@ async def about():
 async def resources():
     """Returns the current resources available to the module"""
     global state, module_resources
-    return JSONResponse(content={"Resources": module_resources})
+    resource_info = ""
+    if not (module_resources == ""):
+        with open(module_resources) as f:
+            resource_info = f.read()
+    return JSONResponse(content={"Resources": resource_info})
 
 
 @app.post("/action")
@@ -85,16 +89,33 @@ def do_action(
         return StepResponse(
             action_response=StepStatus.FAILED,
             action_msg="",
-            action_log="Module is busy",
+            action_log="Tecan is busy",
         )
     state = ModuleStatus.BUSY
 
     try:
-        if action_handle == "do_action":
-            ###
-            # Your action execution logic goes here
-            ###
-            result = "any result you want to return"
+        if action_handle == "open_gate":
+            if "protocol_file_path" in action_vars.keys():
+                file_path = action_vars.get("protocol_file_path")
+                result = tecan.open_tecan(protocol_file_path = file_path)
+            else:
+                result = tecan.open_tecan() 
+
+            state = ModuleStatus.IDLE
+            return StepResponse(
+                action_response=StepStatus.SUCCEEDED,
+                action_msg=result,
+                action_log="",
+            )
+        elif action_handle == "close_gate":
+
+            if "tecan_file_path" in action_vars.keys():
+                kwargs = {
+                    'tecan_file_path': action_vars.get("tecan_file_path"),
+                }
+                result = tecan.close_tecan(**kwargs)
+            else: 
+                result = tecan.close_tecan()
 
             state = ModuleStatus.IDLE
             return StepResponse(
