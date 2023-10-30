@@ -6,9 +6,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 
-from wei.wei.core.data_classes import ModuleStatus, StepResponse, StepStat
-global state, module_resources
+from wei.core.data_classes import ModuleStatus, StepResponse, StepStatus
 
+# from tecan_driver.autorun_tecan import Tecan
+
+global state, module_resources
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -130,7 +132,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     uvicorn.run(
-        "example_rest_node:app",
+        "tecan_rest_node:app",
         host=args.host,
         port=int(args.port),
         reload=True,
