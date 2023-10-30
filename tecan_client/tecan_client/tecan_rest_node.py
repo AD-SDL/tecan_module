@@ -8,14 +8,14 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from wei.core.data_classes import ModuleStatus, StepResponse, StepStatus
 
-# from tecan_driver.autorun_tecan import Tecan
+from tecan_driver.autorun_tecan import Tecan
 
 global state, module_resources
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global state, module_resources
-    """Initial run function for the app, initializes the state
+    """Initial run function for the Tecan app, initializes the state
         Parameters
         ----------
         app : FastApi
@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
         None"""
     try:
         # Do any instrument configuration here
+        tecan = Tecan()
         state = ModuleStatus.IDLE
         module_resources = []
     except Exception as err:
@@ -55,8 +56,17 @@ def get_state():
 async def about():
     """Returns a description of the actions and resources the module supports"""
     global state
-    return JSONResponse(content={"About": ""})
+    return JSONResponse(content={"name": "peeler",
+            "model": "Tecan",
+            "version": "0.0.1",
+            "actions": {
+             "open_gate": "config : %s",  
+             "close_gate": "config : %s",  
+             "run_tecan": "config : %s",  
 
+             },
+            "repo": "https://github.com/AD-SDL/tecan_module.git"
+            })
 
 @app.get("/resources")
 async def resources():
