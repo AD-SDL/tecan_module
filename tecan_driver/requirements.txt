@@ -1,2 +1,5 @@
+fastapi
+uvicorn
 wmi
 pypiwin32
+watchdog
