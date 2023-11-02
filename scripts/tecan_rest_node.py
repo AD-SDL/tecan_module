@@ -57,14 +57,15 @@ def get_state():
 async def about():
     """Returns a description of the actions and resources the module supports"""
     global state
-    return JSONResponse(content={"name": "peeler",
+    return JSONResponse(
+        content={
+            "name": "peeler",
             "model": "Tecan",
             "version": "0.0.1",
             "actions": {
              "open_gate": "config : %s",  
              "close_gate": "config : %s",  
              "run_tecan": "config : %s",  
-
              },
             "repo": "https://github.com/AD-SDL/tecan_module.git"
             })
@@ -85,7 +86,7 @@ def do_action(
     action_handle: str,  # The action to be performed
     action_vars: str,  # Any arguments necessary to run that action
 ) -> StepResponse:
-    global state
+    global tecan, state
     if state == ModuleStatus.BUSY:
         return StepResponse(
             action_response=StepStatus.FAILED,
@@ -105,9 +106,10 @@ def do_action(
             state = ModuleStatus.IDLE
             return StepResponse(
                 action_response=StepStatus.SUCCEEDED,
-                action_msg=result,
-                action_log="",
+                action_msg=result["action_msg"],
+                action_log=result["action_log"],
             )
+        
         elif action_handle == "close_gate":
 
             if "tecan_file_path" in action_vars.keys():
@@ -121,40 +123,29 @@ def do_action(
             state = ModuleStatus.IDLE
             return StepResponse(
                 action_response=StepStatus.SUCCEEDED,
-                action_msg=result,
-                action_log="",
+                action_msg=result["action_msg"],
+                action_log=result["action_log"],
             )
+        
         elif action_handle == "run_tecan":
             if "tecan_iteration" in action_vars.keys():
                 kwargs = {
                     'tecan_iteration': action_vars.get("tecan_iteration"),
                 }
-                return_dict = tecan.run_tecan(**kwargs)
+                result = tecan.run_tecan(**kwargs)
             else:                             
-                return_dict = tecan.run_tecan()
-            return_dict['action_log'] += (f"{datetime.now()} LISTEN Tecan: Tecan Run started\n")
-            
+                result = tecan.run_tecan()
+
+            file_name = result["action_msg"]
             return FileResponse(
                 path=file_name,
                 content={
                     "action_response": StepStatus.SUCCEEDED,
                     "action_msg": file_name,
-                    "action_log": "",
+                    "action_log": result["action_log"],
                 },
             )
         
-        elif action_handle == "do_action_return_file":
-            state = ModuleStatus.IDLE
-            # Use the FileResponse class to return files
-            file_name = json.loads(action_vars)["file_name"]
-            return FileResponse(
-                path=file_name,
-                content={
-                    "action_response": StepStatus.SUCCEEDED,
-                    "action_msg": file_name,
-                    "action_log": "",
-                },
-            )
         else:
             # Handle Unsupported actions
             state = ModuleStatus.IDLE
