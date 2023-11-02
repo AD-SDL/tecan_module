@@ -1,4 +1,3 @@
-"""Example REST-based client for a WEI module"""
 import json
 from datetime import datetime
 from argparse import ArgumentParser
@@ -59,8 +58,8 @@ async def about():
     global state
     return JSONResponse(
         content={
-            "name": "peeler",
-            "model": "Tecan",
+            "name": "tecan",
+            "model": "Infinite200Pro",
             "version": "0.0.1",
             "actions": {
              "open_gate": "config : %s",  
