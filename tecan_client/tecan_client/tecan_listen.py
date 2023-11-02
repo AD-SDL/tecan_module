@@ -51,12 +51,12 @@ while True:
                     except Exception as error_msg: 
                         return_dict = {
                             'action_response': -1,
-                            'action_log': (f"{datetime.now()} ERROR LISTEN Tecan: Tecan client unable to run auto_click_tecan.ahk\n{error_msg}")
+                            'action_log': (f"{datetime.now()} ERROR Tecan unable to run auto_click_tecan.ahk\n{error_msg}")
                         }
                     else: 
                         return_dict = {
                             'action_response': 0,
-                            'action_log': (f"{datetime.now()} LISTEN tecan: tecan client completed run auto_click_tecan.ahk\n")
+                            'action_log': (f"{datetime.now()} Tecan completed run auto_click_tecan.ahk\n")
                         }
                 elif action_handle == "open_gate":
                     try:
@@ -71,12 +71,12 @@ while True:
                     except Exception as error_msg: 
                         return_dict = {
                             'action_response': -1,
-                            'action_log': (f"{datetime.now()} ERROR LISTEN Tecan: Tecan client unable to run open gate\n{error_msg}")
+                            'action_log': (f"{datetime.now()} ERROR Tecan unable to run open gate\n{error_msg}")
                         }
                     else: 
                         return_dict = {
                             'action_response': 0,
-                            'action_log': (f"{datetime.now()} LISTEN tecan: tecan client completed open gate\n")
+                            'action_log': (f"{datetime.now()} Tecan completed open gate\n")
                         }
                 elif action_handle == "close_gate":
                     try:
@@ -95,12 +95,12 @@ while True:
                     except Exception as error_msg: 
                         return_dict = {
                             'action_response': -1,
-                            'action_log': (f"{datetime.now()} ERROR LISTEN Tecan: Tecan client unable to run close gate\n{error_msg}")
+                            'action_log': (f"{datetime.now()} ERROR Tecan unable to run close gate\n{error_msg}")
                         }
                     else: 
                         return_dict = {
                             'action_response': 0,
-                            'action_log': (f"{datetime.now()} LISTEN tecan: tecan client completed close gate\n")
+                            'action_log': (f"{datetime.now()} Tecan completed close gate\n")
                         }
                 else:
                     return_dict = {
