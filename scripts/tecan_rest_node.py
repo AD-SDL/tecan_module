@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     parser.add_argument("--host", type=str, default="0.0.0.0", help="Host IP")
-    parser.add_argument("--port", type=str, default="2000", help="Host IP")
+    parser.add_argument("--port", type=str, default="5557", help="Port")
     # Add any additional arguments here
     args = parser.parse_args()
 
