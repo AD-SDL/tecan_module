@@ -65,7 +65,7 @@ class Tecan():
         return_dict = {
         'action_response': "0",
         'action_msg': "Succsess",
-        'action_log': "run completed"
+        'action_log': "Open gate completed"
         }
         return return_dict
     
@@ -155,7 +155,7 @@ class Tecan():
         return_dict = {
         'action_response': "0",
         'action_msg': "Succsess",
-        'action_log': "run completed"
+        'action_log': "Close gate completed"
         }
 
         if tecan_file_path is not None:
@@ -205,8 +205,8 @@ class Tecan():
             print('file_path', file_path)
             return_dict = {
                     'action_response': "0",
-                    'action_msg': "Succsess",
-                    'action_log': file_path
+                    'action_msg': file_path,
+                    'action_log': "Succsess"
                     }
                 
         except Exception as error_msg: 
@@ -214,7 +214,7 @@ class Tecan():
             return_dict = {
                     'action_response': "-1",
                     'action_msg': error_msg,
-                    'action_log': "run failed"
+                    'action_log': "Run failed"
                     }
 
         return return_dict
