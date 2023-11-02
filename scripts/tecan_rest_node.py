@@ -1,5 +1,6 @@
 """Example REST-based client for a WEI module"""
 import json
+from datetime import datetime
 from argparse import ArgumentParser
 from contextlib import asynccontextmanager
 
@@ -123,6 +124,25 @@ def do_action(
                 action_msg=result,
                 action_log="",
             )
+        elif action_handle == "run_tecan":
+            if "tecan_iteration" in action_vars.keys():
+                kwargs = {
+                    'tecan_iteration': action_vars.get("tecan_iteration"),
+                }
+                return_dict = tecan.run_tecan(**kwargs)
+            else:                             
+                return_dict = tecan.run_tecan()
+            return_dict['action_log'] += (f"{datetime.now()} LISTEN Tecan: Tecan Run started\n")
+            
+            return FileResponse(
+                path=file_name,
+                content={
+                    "action_response": StepStatus.SUCCEEDED,
+                    "action_msg": file_name,
+                    "action_log": "",
+                },
+            )
+        
         elif action_handle == "do_action_return_file":
             state = ModuleStatus.IDLE
             # Use the FileResponse class to return files
