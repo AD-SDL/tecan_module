@@ -37,7 +37,7 @@ def correct_file_name(file_name):
 class Tecan():
 
     def __init__(self):
-        # self.wmi_service = wmi.WMI()
+        self.wmi_service = wmi.WMI()
         self.library_path = "C:/Users/Public/Documents/Tecan/Magellan Pro/mth/ECP-350-800-Yukun.mth"
         self.asc_folder_path = "C:/Users/Public/Documents/Tecan/Magellan Pro/asc/"
         self.csv_folder_path = "C:/Users/cnmuser/Desktop/Polybot/tecan_code/uv_vis_data"
