@@ -12,7 +12,7 @@ flowdef:
     module: tecan
     action: open_gate
     args:
-      protocol_file_path: README.md
+      protocol_file_path: ../README.md
     checks: null
     comment: Open Tecan
 
@@ -20,7 +20,7 @@ flowdef:
     module: tecan
     action: close_gate
     args:
-      protocol_file_path: README.md
+      protocol_file_path: ../README.md
     checks: null
     comment: Close Tecan
 
