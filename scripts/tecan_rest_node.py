@@ -1,12 +1,12 @@
 import json
-from datetime import datetime
 from argparse import ArgumentParser
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 
-from wei.core.data_classes import ModuleStatus, StepResponse, StepStatus
+from wei.core.data_classes import ModuleStatus, StepResponse, StepFileResponse, StepStatus
+import traceback
 
 from tecan_driver.autorun_tecan import Tecan
 
@@ -62,9 +62,9 @@ async def about():
             "model": "Infinite200Pro",
             "version": "0.0.1",
             "actions": {
-             "open_gate": "config : %s",  
-             "close_gate": "config : %s",  
-             "run_tecan": "config : %s",  
+             "open_gate": "config : %s",
+             "close_gate": "config : %s",
+             "run_tecan": "config : %s",
              },
             "repo": "https://github.com/AD-SDL/tecan_module.git"
             })
@@ -93,14 +93,15 @@ def do_action(
             action_log="Tecan is busy",
         )
     state = ModuleStatus.BUSY
+    action_args = json.loads(action_vars)
 
     try:
         if action_handle == "open_gate":
-            if "protocol_file_path" in action_vars.keys():
-                file_path = action_vars.get("protocol_file_path")
+            if "protocol_file_path" in action_args.keys():
+                file_path = action_args.get("protocol_file_path")
                 result = tecan.open_tecan(protocol_file_path = file_path)
             else:
-                result = tecan.open_tecan() 
+                result = tecan.open_tecan()
 
             state = ModuleStatus.IDLE
             return StepResponse(
@@ -108,15 +109,15 @@ def do_action(
                 action_msg=result["action_msg"],
                 action_log=result["action_log"],
             )
-        
+
         elif action_handle == "close_gate":
 
-            if "tecan_file_path" in action_vars.keys():
+            if "tecan_file_path" in action_args.keys():
                 kwargs = {
-                    'tecan_file_path': action_vars.get("tecan_file_path"),
+                    'tecan_file_path': action_args.get("tecan_file_path"),
                 }
                 result = tecan.close_tecan(**kwargs)
-            else: 
+            else:
                 result = tecan.close_tecan()
 
             state = ModuleStatus.IDLE
@@ -125,26 +126,25 @@ def do_action(
                 action_msg=result["action_msg"],
                 action_log=result["action_log"],
             )
-        
+
         elif action_handle == "run_tecan":
-            if "tecan_iteration" in action_vars.keys():
+            if "tecan_iteration" in action_args.keys():
                 kwargs = {
-                    'tecan_iteration': action_vars.get("tecan_iteration"),
+                    'tecan_iteration': action_args.get("tecan_iteration"),
                 }
                 result = tecan.run_tecan(**kwargs)
-            else:                             
+            else:
                 result = tecan.run_tecan()
 
             file_name = result["action_msg"]
-            return FileResponse(
+
+            state = ModuleStatus.IDLE
+            return StepFileResponse(
+                action_response=StepStatus.SUCCEEDED,
                 path=file_name,
-                content={
-                    "action_response": StepStatus.SUCCEEDED,
-                    "action_msg": file_name,
-                    "action_log": result["action_log"],
-                },
+                action_log=result["action_log"],
             )
-        
+
         else:
             # Handle Unsupported actions
             state = ModuleStatus.IDLE
@@ -155,6 +155,7 @@ def do_action(
             )
     except Exception as e:
         print(str(e))
+        print(traceback.format_exc())
         state = ModuleStatus.IDLE
         return StepResponse(
             action_response=StepStatus.FAILED,

@@ -1,0 +1,33 @@
+name: Test Tecan
+metadata:
+  author: Doga Ozgulbas, Ryan D. Lewis
+  info: Test workflow for Tecan
+  version: 0.1
+
+modules:
+  - name: tecan
+
+flowdef:
+  - name: Open Tecan
+    module: tecan
+    action: open_gate
+    args:
+      protocol_file_path: README.md
+    checks: null
+    comment: Open Tecan
+
+  - name: Close Tecan
+    module: tecan
+    action: close_gate
+    args:
+      protocol_file_path: README.md
+    checks: null
+    comment: Close Tecan
+
+  - name: Run Tecan
+    module: tecan
+    action: run_tecan
+    args:
+      tecan_iteration: 1
+    checks: null
+    comment: Run Tecan
